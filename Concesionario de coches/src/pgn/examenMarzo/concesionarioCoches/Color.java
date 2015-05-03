@@ -9,7 +9,7 @@ package pgn.examenMarzo.concesionarioCoches;
  * la gestión de un menú, devolverá el color indicado.
  * 
  * @author Elisa Navarro Zuara
- * @version 1.1
+ * @version 2.0
  */
 public enum Color {
 	

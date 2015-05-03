@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  * </ul>
  * 
  * @author Elisa Navarro Zuara
- * @version 1.1
+ * @version 2.0
  */
 public class Coche implements Serializable {
 	
@@ -99,7 +99,7 @@ public class Coche implements Serializable {
 	 * @return true si la matrícula es válida, false si la matrícula no es
 	 *         válida
 	 */
-	private static boolean esValida(String matricula) {
+	public static boolean esValida(String matricula) {
 		return patternMatricula.matcher(matricula).matches();
 	}
 
@@ -122,8 +122,26 @@ public class Coche implements Serializable {
 	 * 
 	 * @return Color del coche
 	 */
-	Color getColor() {
+	public Color getColor() {
 		return color;
+	}
+	
+	/**
+	 * Devuelve el modelo del coche
+	 * 
+	 * @return Modelo del coche
+	 */
+	public Modelo getModelo() {
+		return modelo;
+	}
+	
+	/**
+	 * Devuelve la matrícula del coche
+	 * 
+	 * @return Matrícula del coche
+	 */
+	public String getMatricula() {
+		return matricula;
 	}
 
 	/**

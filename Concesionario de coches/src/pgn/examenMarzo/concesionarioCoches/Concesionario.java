@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * de las características del coche puede ser por defecto.
  * 
  * @author Elisa Navarro Zuara
- * @version 1.1
+ * @version 2.0
  */
 public class Concesionario implements Serializable {
 	
@@ -63,7 +63,7 @@ public class Concesionario implements Serializable {
 	 * @throws CocheYaExisteException
 	 *             Si el coche ya existe en el concesionario
 	 */
-	boolean annadir(String matricula, Color color, Modelo modelo)
+	public boolean annadir(String matricula, Color color, Modelo modelo)
 			throws MatriculaNoValidaException, ColorNoValidoException,
 			ModeloNoValidoException, CocheYaExisteException {
 		Coche coche = new Coche(matricula, color, modelo);
@@ -84,7 +84,8 @@ public class Concesionario implements Serializable {
 	 * @throws CocheNoExisteException
 	 *             Si el coche no existe en el concesionario
 	 */
-	boolean eliminar(String matricula) throws MatriculaNoValidaException, CocheNoExisteException {
+	public boolean eliminar(String matricula)
+			throws MatriculaNoValidaException, CocheNoExisteException {
 		Coche coche = new Coche(matricula);
 		if (!almacen.contains(coche))
 			throw new CocheNoExisteException("El coche no existe.");
@@ -96,7 +97,7 @@ public class Concesionario implements Serializable {
 	 * 
 	 * @return Número de coches del almacen
 	 */
-	int size() {
+	public int size() {
 		return almacen.size();
 	}
 
@@ -111,7 +112,8 @@ public class Concesionario implements Serializable {
 	 * @throws CocheNoExisteException
 	 *             Si el coche no existe en el concesionario
 	 */
-	Coche get(String matricula) throws MatriculaNoValidaException, CocheNoExisteException {
+	public Coche get(String matricula) throws MatriculaNoValidaException,
+			CocheNoExisteException {
 		Coche coche = new Coche(matricula);
 		int index = almacen.indexOf(coche);
 		if (index != -1) {
@@ -119,6 +121,21 @@ public class Concesionario implements Serializable {
 		} else {
 			throw new CocheNoExisteException("El coche no existe.");
 		}
+	}
+	
+	/**
+	 * Devuelve el coche indicado por el índice
+	 * 
+	 * @param index
+	 *            Representa el índice a buscar
+	 * @return Coche contenido en el almacen. null si no existe
+	 */
+	public Coche get(int index) {
+		if(almacen.isEmpty())
+			return null;
+		if(index < 0 | index > almacen.size()-1)
+			return null;
+		return almacen.get(index);
 	}
 
 	/*

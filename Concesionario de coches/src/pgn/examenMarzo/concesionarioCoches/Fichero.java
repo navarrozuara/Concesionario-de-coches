@@ -11,20 +11,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.regex.Pattern;
 
 /**
- * Clase Fichero que contiene todos los métodos necesarios para operar con ficheros
+ * Clase que contiene todos los métodos necesarios para operar con ficheros
  * 
  * @author Elisa Navarro Zuara
- * @version 1.0
+ * @version 2.0
  */
 public class Fichero {
-	
-	/**
-	 * Patrón para un nombre de archivo válido
-	 */
-	private static Pattern pattern = Pattern.compile("^((\\w)+(\\.obj))$");
 	
 	/**
 	 * Método para abrir un concesionario existente
@@ -32,7 +26,7 @@ public class Fichero {
 	 * @param file
 	 *            Representa el fichero a abrir
 	 * @return Concesionario existente
-	 * @throws ClassNotFoundException
+	 * @throws ClassNotFoundException 
 	 * @throws IOException
 	 */
 	public static Concesionario abrir(File file) throws ClassNotFoundException, IOException {
@@ -60,6 +54,13 @@ public class Fichero {
 		}
 	}
 	
+	/**
+	 * Comprueba si el fichero existe
+	 * 
+	 * @param file
+	 *            Representa el fichero a comprobar
+	 * @return true si el fichero existe, false en otro caso
+	 */
 	public static boolean isExists(File file) {
 		file = comprobarExtension(file);
 		return file.exists();
@@ -73,9 +74,10 @@ public class Fichero {
 	 * @return Fichero con la extensión válida
 	 */
 	static File comprobarExtension(File file) {
-		if (pattern.matcher(file.getPath()).matches())
-			return file;
-		return new File (file.getPath() + ".obj");
+		String path = file.getPath();
+        if (!path.endsWith(".obj"))
+            return new File(path + ".obj");
+        return file;
 	}
 
 }
