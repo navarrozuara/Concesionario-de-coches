@@ -3,6 +3,7 @@
  */
 package pgn.examenMarzo.concesionarioCoches;
 
+import java.io.Serializable;
 import java.util.regex.Pattern;
 
 /**
@@ -22,10 +23,15 @@ import java.util.regex.Pattern;
  * </ul>
  * 
  * @author Elisa Navarro Zuara
- * @version 1.0
+ * @version 1.1
  */
-public class Coche {
+public class Coche implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Matrícula del coche
 	 */
@@ -56,8 +62,17 @@ public class Coche {
 	 *            Representa el color del nuevo coche
 	 * @param modelo
 	 *            Representa el modelo del nuevo coche
+	 *            
+	 * @throws MatriculaNoValidaException
+	 *             Si la matrícula no es válida
+	 * @throws ColorNoValidoException
+	 *             Si el color no es válido
+	 * @throws ModeloNoValidoException
+	 *             Si el modelo no es válido
 	 */
-	private Coche(String matricula, Color color, Modelo modelo) {
+	Coche(String matricula, Color color, Modelo modelo)
+			throws MatriculaNoValidaException, ColorNoValidoException,
+			ModeloNoValidoException {
 		super();
 		setMatricula(matricula);
 		setColor(color);
@@ -69,41 +84,11 @@ public class Coche {
 	 * 
 	 * @param matricula
 	 *            Representa la matrícula del nuevo coche
+	 * @throws MatriculaNoValidaException
+	 *             Si la matrícula no es válida
 	 */
-	private Coche(String matricula) {
+	Coche(String matricula) throws MatriculaNoValidaException {
 		setMatricula(matricula);
-	}
-
-	/**
-	 * Instancia un objeto de clase coche de matrícula, color y modelo
-	 * especificado
-	 * 
-	 * @param matricula
-	 *            Representa la matrícula del nuevo coche
-	 * @param color
-	 *            Representa el color del nuevo coche
-	 * @param modelo
-	 *            Representa el modelo del nuevo coche
-	 * @return Objeto de clase coche. null si la matrícula, el color o el modelo
-	 *         no son válidos
-	 */
-	static Coche instanciarCoche(String matricula, Color color, Modelo modelo) {
-		if (esValida(matricula) && color != null && modelo != null)
-			return new Coche(matricula, color, modelo);
-		return null;
-	}
-
-	/**
-	 * Instancia un objeto de clase coche de matrícula especificada
-	 * 
-	 * @param matricula
-	 *            Representa la matrícula del nuevo coche
-	 * @return Objeto de clase coche. null si la matrícula no es válida
-	 */
-	static Coche instanciarCoche(String matricula) {
-		if (esValida(matricula))
-			return new Coche(matricula);
-		return null;
 	}
 
 	/**
@@ -123,8 +108,12 @@ public class Coche {
 	 * 
 	 * @param matricula
 	 *            Representa la nueva matrícula del coche
+	 * @throws MatriculaNoValidaException
+	 *             Si la matrícula no es válida
 	 */
-	private void setMatricula(String matricula) {
+	private void setMatricula(String matricula) throws MatriculaNoValidaException {
+		if (!esValida(matricula))
+			throw new MatriculaNoValidaException("La matrícula introducida no es válida.");
 		this.matricula = matricula;
 	}
 
@@ -142,8 +131,12 @@ public class Coche {
 	 * 
 	 * @param color
 	 *            Representa el nuevo color del coche
+	 * @throws ColorNoValidoException
+	 *             Si el color no es válido
 	 */
-	private void setColor(Color color) {
+	private void setColor(Color color) throws ColorNoValidoException {
+		if (color == null)
+			throw new ColorNoValidoException("El color introducido no es válido.");
 		this.color = color;
 	}
 
@@ -152,8 +145,12 @@ public class Coche {
 	 * 
 	 * @param modelo
 	 *            Representa el nuevo modelo del coche
+	 * @throws ModeloNoValidoException
+	 *             Si el modelo no es válido
 	 */
-	private void setModelo(Modelo modelo) {
+	private void setModelo(Modelo modelo) throws ModeloNoValidoException {
+		if (modelo == null)
+			throw new ModeloNoValidoException("El modelo introducido no es válido.");
 		this.modelo = modelo;
 	}
 

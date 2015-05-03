@@ -3,6 +3,9 @@
  */
 package pgn.examenMarzo.concesionarioCoches;
 
+import java.io.File;
+import java.io.IOException;
+
 import pgn.examenMarzo.utiles.Menu;
 import pgn.examenMarzo.utiles.Teclado;
 import pgn.examenMarzo.concesionarioCoches.Color;
@@ -21,7 +24,7 @@ import pgn.examenMarzo.concesionarioCoches.Modelo;
  * </ol>
  * 
  * @author Elisa Navarro Zuara
- * @version 1.0
+ * @version 1.1
  */
 public class TestConcesionario {
 	
@@ -31,7 +34,7 @@ public class TestConcesionario {
 	static Menu menu = new Menu("Concesionario de coches", new String[] {
 			"Alta Coche", "Baja Coche", "Mostrar Coche",
 			"Mostrar concesionario", "Contar coches del concesionario",
-			"Mostrar coches de un color", "Salir" });
+			"Mostrar coches de un color", "Ficheros", "Salir" });
 	
 	/**
 	 * Menú para seleccionar el color
@@ -46,9 +49,25 @@ public class TestConcesionario {
 			Modelo.generarOpcionesMenu());
 	
 	/**
+	 * Menú para gestionar los ficheros
+	 */
+	private static Menu menuFicheros = new Menu("Gestionar ficheros",
+			new String[] { "Nuevo", "Abrir", "Guardar", "Guardar como...", "Salir" });
+	
+	/**
+	 * Menú para guardar los cambios
+	 */
+	private static Menu menuGuardarCambios = new Menu(
+			"El concesionario ha sido modificado. ¿Desea guardar los cambios?",
+			new String[] { "Si", "No" });
+
+	/**
 	 * Concesionario de coches
 	 */
 	static Concesionario concesionario = new Concesionario();
+	
+	private static File file;
+	private static boolean modificado;
 
 	/**
 	 * Método principal del programa
@@ -78,6 +97,9 @@ public class TestConcesionario {
 			case 6: // Mostrar coches de un color
 				System.out.println(concesionario.getCochesColor(pedirColor()));
 				break;
+			case 7: // Ficheros
+				gestionarFicheros();
+				break;
 			default: // Salir
 				System.out.println("Aaaaaaaaaaaaaaaaaaaaadios");
 				return;
@@ -89,34 +111,150 @@ public class TestConcesionario {
 	 * Comunicación con el usuario para mostrar un coche según la matrícula
 	 */
 	private static void getCoche() {
-		Coche coche = concesionario.get(Teclado
-				.leerCadena("Introduce la matrícula"));
-		if (coche == null)
-			System.out.println("No existe el coche en el concesionario.");
-		else
+		Coche coche;
+		try {
+			coche = concesionario.get(Teclado.leerCadena("Introduce la matrícula: "));
 			System.out.println(coche);
+		} catch (MatriculaNoValidaException | CocheNoExisteException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	/**
 	 * Comunicación con el usuario para eliminar un coche de la lista
 	 */
 	private static void eliminarCoche() {
-		if (concesionario
-				.eliminar(Teclado.leerCadena("Introduce la matrícula")))
-			System.out.println("Coche eliminado");
-		else
-			System.out.println("No se ha podido eliminar");
+		try {
+			concesionario.eliminar(Teclado.leerCadena("Introduce la matrícula: "));
+			setModificado(true);
+			System.out.println("Coche eliminado.");
+		} catch (MatriculaNoValidaException | CocheNoExisteException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	/**
 	 * Comunicación con el usuario para añadir un coche a la lista
 	 */
 	private static void annadirCoche() {
-		if (concesionario.annadir(Teclado.leerCadena("Introduce la matrícula"),
-				pedirColor(), pedirModelo()))
-			System.out.println("Coche añadido con éxito");
-		else
-			System.out.println("No se ha podido añadir");
+		try {
+			concesionario.annadir(Teclado.leerCadena("Introduce la matrícula: "),
+					pedirColor(), pedirModelo());
+			setModificado(true);
+			System.out.println("Coche añadido con éxito.");
+		} catch (MatriculaNoValidaException | ColorNoValidoException
+				| ModeloNoValidoException | CocheYaExisteException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	/**
+	 * Método para realizar la gestión de los ficheros
+	 */
+	private static void gestionarFicheros() {
+		do {
+			switch (menuFicheros.gestionar()) {
+			case 1: // Nuevo
+				nuevo();
+				break;
+			case 2: // Abrir
+				abrir();
+				break;
+			case 3: // Guardar
+				guardar();
+				break;
+			case 4: // Guardar como...
+				guardarComo();
+				break;
+			default: // Salir
+				return;
+			}
+		} while (true);
+	}
+
+	private static void nuevo() {
+		comprobarCambios();
+		inicializar();
+		setFile(null);
+	}
+
+	private static void inicializar() {
+		setModificado(false);
+		concesionario = new Concesionario();
+	}
+	
+	private static void abrir() {
+		comprobarCambios();
+		try {
+			File file = new File(Teclado.leerCadena("Introduce el nombre del fichero: "));
+			concesionario = Fichero.abrir(file);
+			setFile(file);
+		} catch (ClassNotFoundException e) {
+			System.out.println("Fichero con información distinta a la esperada.");
+		} catch (IOException e) {
+			System.out.println("El sistema no puede abrir el fichero.");
+		}
+	}
+	
+	private static void guardar() {
+		if (getFile() == null)
+			guardarComo();
+		else {
+			try {
+				Fichero.guardar(getFile(), concesionario);
+				setModificado(false);
+				System.out.println("Fichero guardado con éxito.");
+			} catch (IOException e) {
+				System.out.println("El sistema no puede guardar el fichero.");
+			}
+		}
+	}
+	
+	private static void guardarComo() {
+		try {
+			File file = new File(Teclado.leerCadena("Introduce el nombre del fichero: "));
+			if (Fichero.isExists(file)) {
+				char c = Teclado
+						.leerCaracter("El fichero ya existe. ¿Desea sobreescribirlo? (s/n)");
+				switch (c) {
+				case 'n':
+				case 'N':
+					return;
+				}
+			}
+			Fichero.guardar(file, concesionario);
+			setModificado(false);
+			setFile(file);
+		} catch (IOException e) {
+			System.out.println("El sistema no puede guardar el fichero.");
+		}
+	}
+
+	private static boolean comprobarCambios() {
+		if (isModificado()) {
+			switch (menuGuardarCambios.gestionar()) {
+			case 1: // Si
+				guardar();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static File getFile() {
+		return file;
+	}
+
+	private static void setFile(File file) {
+		TestConcesionario.file = file;
+	}
+
+	private static boolean isModificado() {
+		return modificado;
+	}
+
+	private static void setModificado(boolean modificado) {
+		TestConcesionario.modificado = modificado;
 	}
 
 	/**

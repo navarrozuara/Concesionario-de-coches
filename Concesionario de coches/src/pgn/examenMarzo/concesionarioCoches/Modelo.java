@@ -11,7 +11,7 @@ package pgn.examenMarzo.concesionarioCoches;
  * gestión de un menú, devolverá el modelo indicado.
  * 
  * @author Elisa Navarro Zuara
- * @version 1.0
+ * @version 1.1
  */
 public enum Modelo {
 
