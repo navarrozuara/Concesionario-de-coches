@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * @version 2.0
  */
 public class Concesionario implements Serializable {
-	
+	// Comentario de Victor
 	/**
 	 * 
 	 */
